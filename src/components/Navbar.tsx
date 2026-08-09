@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, MessageCircle, Plus, Minus, Trash2 } from 'lucide-react';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { WHATSAPP_NUMBER, getWhatsAppCartLink } from '../config';
 
@@ -16,9 +16,21 @@ const navLinks = [
   { label: 'Contact', to: '/contact' },
 ];
 
+const sectionToPathMap: Record<string, string> = {
+  'hero': '/',
+  'featured-products': '/shop',
+  'special-combos': '/combos',
+  'why-choose-us': '/',
+  'testimonials-home': '/testimonials',
+  'instagram-feed': '/',
+  'faq-home': '/faq',
+  'newsletter': '/',
+};
+
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [activeScrollPath, setActiveScrollPath] = useState('/');
   const { cart, cartCount, cartTotal, addToCart, removeFromCart } = useCart();
   const location = useLocation();
   const shouldReduceMotion = useReducedMotion();
@@ -29,13 +41,46 @@ export default function Navbar() {
     setCartOpen(false);
   }, [location.pathname]);
 
+  // Scrollspy effect for the Home page
+  useEffect(() => {
+    if (location.pathname !== '/') return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries.filter(entry => entry.isIntersecting);
+        if (visibleEntries.length > 0) {
+          // If multiple sections are intersecting, pick the one with highest intersection ratio
+          const mostVisible = visibleEntries.reduce((prev, current) => 
+            (prev.intersectionRatio > current.intersectionRatio) ? prev : current
+          );
+          const path = sectionToPathMap[mostVisible.target.id];
+          if (path) {
+            setActiveScrollPath(path);
+          }
+        }
+      },
+      {
+        rootMargin: '-100px 0px -60% 0px',
+        threshold: 0
+      }
+    );
+
+    const sectionIds = Object.keys(sectionToPathMap);
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [location.pathname]);
+
   // Framer motion variants
-  const backdropVariants = {
+  const backdropVariants: Variants = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { duration: 0.3, ease: 'easeInOut' } },
   };
 
-  const drawerVariants = {
+  const drawerVariants: Variants = {
     hidden: shouldReduceMotion ? { opacity: 0 } : { x: '100%', opacity: 1 },
     visible: { x: 0, opacity: 1, transition: { duration: 0.3, ease: 'easeInOut' } },
   };
@@ -66,13 +111,16 @@ export default function Navbar() {
                   key={to}
                   to={to}
                   end={to === '/'}
-                  className={({ isActive }) =>
-                    `text-sm font-medium transition-all duration-200 ease-out ${
-                      isActive
+                  className={({ isActive }) => {
+                    const isReallyActive = location.pathname === '/' 
+                      ? activeScrollPath === to 
+                      : isActive;
+                    return `text-sm font-medium transition-all duration-200 ease-out ${
+                      isReallyActive
                         ? 'text-sage border-b-2 border-sage pb-0.5'
                         : 'text-charcoal-light hover:text-charcoal hover:border-b-2 hover:border-charcoal-light pb-0.5'
-                    }`
-                  }
+                    }`;
+                  }}
                 >
                   {label}
                 </NavLink>
@@ -166,13 +214,16 @@ export default function Navbar() {
                     to={to}
                     end={to === '/'}
                     onClick={() => setMobileOpen(false)}
-                    className={({ isActive }) =>
-                      `flex items-center px-4 py-3.5 rounded-2xl text-base font-medium transition-all duration-200 ease-out ${
-                        isActive
+                    className={({ isActive }) => {
+                      const isReallyActive = location.pathname === '/' 
+                        ? activeScrollPath === to 
+                        : isActive;
+                      return `flex items-center px-4 py-3.5 rounded-2xl text-base font-medium transition-all duration-200 ease-out ${
+                        isReallyActive
                           ? 'bg-sage/10 text-sage font-semibold'
                           : 'text-charcoal hover:bg-ivory-dark active:scale-[0.98]'
-                      }`
-                    }
+                      }`;
+                    }}
                   >
                     {label}
                   </NavLink>
