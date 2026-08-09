@@ -180,7 +180,7 @@ export default function ContactPage() {
                       value={formState.name}
                       onChange={(e) => setFormState({ ...formState, name: e.target.value })}
                       placeholder="Your full name"
-                      className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage transition-colors"
+                      className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage focus:ring-2 focus:ring-sage/40 transition-colors"
                     />
                   </div>
                   <div>
@@ -194,7 +194,7 @@ export default function ContactPage() {
                       value={formState.email}
                       onChange={(e) => setFormState({ ...formState, email: e.target.value })}
                       placeholder="your@email.com"
-                      className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage transition-colors"
+                      className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage focus:ring-2 focus:ring-sage/40 transition-colors"
                     />
                   </div>
                 </div>
@@ -208,7 +208,7 @@ export default function ContactPage() {
                     value={formState.subject}
                     onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
                     placeholder="e.g. Order query, Product info…"
-                    className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage focus:ring-2 focus:ring-sage/40 transition-colors"
                   />
                 </div>
                 <div>
@@ -222,7 +222,7 @@ export default function ContactPage() {
                     value={formState.message}
                     onChange={(e) => setFormState({ ...formState, message: e.target.value })}
                     placeholder="Tell us how we can help you…"
-                    className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage transition-colors resize-none"
+                    className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage focus:ring-2 focus:ring-sage/40 transition-colors resize-none"
                   />
                 </div>
                 <button

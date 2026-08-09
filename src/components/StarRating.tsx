@@ -28,7 +28,7 @@ export default function StarRating({ rating, max = 5, interactive = false, onRat
             onMouseEnter={() => interactive && setHoverRating(starValue)}
             onMouseLeave={() => interactive && setHoverRating(null)}
             className={`flex items-center justify-center p-0.5 transition-transform duration-100 ${
-              interactive ? 'cursor-pointer hover:scale-110 focus:outline-none' : ''
+              interactive ? 'cursor-pointer hover:scale-110 focus:outline-none focus:ring-2 focus:ring-sage focus:ring-offset-2 rounded-full' : ''
             }`}
             aria-label={interactive ? `Rate ${starValue} stars out of ${max}` : undefined}
           >

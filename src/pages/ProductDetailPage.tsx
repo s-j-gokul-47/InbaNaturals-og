@@ -341,7 +341,7 @@ export default function ProductDetailPage() {
                     value={reviewerName}
                     onChange={(e) => setReviewerName(e.target.value)}
                     placeholder="Enter your name"
-                    className="w-full px-4 py-2.5 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage transition-colors"
+                    className="w-full px-4 py-2.5 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage focus:ring-2 focus:ring-sage/40 transition-colors"
                   />
                 </div>
 
@@ -367,7 +367,7 @@ export default function ProductDetailPage() {
                     value={reviewerComment}
                     onChange={(e) => setReviewerComment(e.target.value)}
                     placeholder="What did you think of the product?"
-                    className="w-full px-4 py-2.5 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage transition-colors resize-none"
+                    className="w-full px-4 py-2.5 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage focus:ring-2 focus:ring-sage/40 transition-colors resize-none"
                   />
                 </div>
 

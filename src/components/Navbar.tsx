@@ -126,7 +126,7 @@ export default function Navbar() {
       {/* ─── Main Sticky Header ─── */}
       <header className="sticky top-0 z-40 bg-ivory/90 backdrop-blur-md border-b border-ivory-dark shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 md:h-20">
+          <div className="flex items-center justify-between h-16 lg:h-20">
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group" aria-label="InbaNaturals home">
@@ -141,7 +141,7 @@ export default function Navbar() {
             </Link>
 
             {/* Desktop Nav — hidden on mobile */}
-            <nav className="hidden md:flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-6">
               {navLinks.map(({ label, to }) => (
                 <NavLink
                   key={to}
@@ -209,7 +209,7 @@ export default function Navbar() {
 
               {/* Hamburger button — only on mobile */}
               <button
-                className="md:hidden flex items-center justify-center w-10 h-10 rounded-xl hover:bg-ivory-dark transition-all duration-200 ease-out active:scale-[0.98] cursor-pointer"
+                className="lg:hidden flex items-center justify-center w-10 h-10 rounded-xl hover:bg-ivory-dark transition-all duration-200 ease-out active:scale-[0.98] cursor-pointer"
                 onClick={() => setMobileOpen(true)}
                 aria-label="Open navigation menu"
                 aria-expanded={mobileOpen}
@@ -225,7 +225,7 @@ export default function Navbar() {
       {/* Rendered as a sibling OUTSIDE the header so backdrop-filter doesn't clip the z-index */}
       <AnimatePresence>
         {mobileOpen && (
-          <div className="fixed inset-0 z-[9999] flex md:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
+          <div className="fixed inset-0 z-[9999] flex lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
             {/* Dark backdrop — click anywhere to close */}
             <motion.div
               className="absolute inset-0 bg-black/50"

@@ -405,7 +405,7 @@ export default function HomePage() {
             <input
               type="email"
               placeholder="Enter your email address"
-              className="flex-1 px-5 py-3.5 rounded-2xl bg-white/20 border border-white/30 text-white placeholder-white/50 focus:outline-none focus:border-white text-sm backdrop-blur-sm"
+              className="flex-1 px-5 py-3.5 rounded-2xl bg-white/20 border border-white/30 text-white placeholder-white/50 focus:outline-none focus:border-white focus:ring-2 focus:ring-sage/40 text-sm backdrop-blur-sm"
             />
             <button
               type="submit"

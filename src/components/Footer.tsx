@@ -129,7 +129,7 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="your@email.com"
-                className="flex-1 bg-white/10 border border-white/20 text-white text-sm rounded-xl px-3 py-2 placeholder-white/30 focus:outline-none focus:border-sage-light transition-colors"
+                className="flex-1 bg-white/10 border border-white/20 text-white text-sm rounded-xl px-3 py-2 placeholder-white/30 focus:outline-none focus:border-sage-light focus:ring-2 focus:ring-sage/40 transition-colors"
               />
               <button className="bg-sage hover:bg-sage-dark text-white text-sm px-4 py-2 rounded-xl transition-all duration-200 ease-out active:scale-[0.98] cursor-pointer">
                 →
