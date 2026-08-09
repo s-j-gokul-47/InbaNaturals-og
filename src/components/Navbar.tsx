@@ -24,7 +24,7 @@ const sectionToPathMap: Record<string, string> = {
   'testimonials-home': '/testimonials',
   'instagram-feed': '/',
   'faq-home': '/faq',
-  'newsletter': '/',
+  'newsletter': '/contact',
 };
 
 export default function Navbar() {
@@ -45,33 +45,69 @@ export default function Navbar() {
   useEffect(() => {
     if (location.pathname !== '/') return;
 
+    const activeSections = new Set<string>();
+
     const observer = new IntersectionObserver(
       (entries) => {
-        const visibleEntries = entries.filter(entry => entry.isIntersecting);
-        if (visibleEntries.length > 0) {
-          // If multiple sections are intersecting, pick the one with highest intersection ratio
-          const mostVisible = visibleEntries.reduce((prev, current) => 
-            (prev.intersectionRatio > current.intersectionRatio) ? prev : current
-          );
-          const path = sectionToPathMap[mostVisible.target.id];
-          if (path) {
-            setActiveScrollPath(path);
+        let changed = false;
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            activeSections.add(entry.target.id);
+            changed = true;
+          } else {
+            activeSections.delete(entry.target.id);
+            changed = true;
+          }
+        });
+
+        if (changed) {
+          const orderedKeys = Object.keys(sectionToPathMap);
+          // Find the first intersecting section in DOM order (highest on the page)
+          const topmostSection = orderedKeys.find(id => activeSections.has(id));
+          
+          if (topmostSection) {
+            setActiveScrollPath(sectionToPathMap[topmostSection]);
+          } else if (window.scrollY < 100) {
+            // Fallback: if we are at the top and nothing is intersecting, default to Home
+            setActiveScrollPath('/');
           }
         }
       },
       {
-        rootMargin: '-100px 0px -60% 0px',
+        // A generous 40vh band in the middle of the screen (30% from top, 30% from bottom)
+        // This guarantees no gaps are missed during fast scrolling and tracks the section the user is actually looking at.
+        rootMargin: '-30% 0px -30% 0px',
         threshold: 0
       }
     );
 
-    const sectionIds = Object.keys(sectionToPathMap);
-    sectionIds.forEach(id => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
-    });
+    // Because of PageTransitions (AnimatePresence mode="wait"), the new page's DOM
+    // might not be present immediately when the location changes. We poll briefly to attach observers.
+    const unobservedIds = new Set(Object.keys(sectionToPathMap));
+    let pollInterval: ReturnType<typeof setInterval>;
 
-    return () => observer.disconnect();
+    const tryObserve = () => {
+      unobservedIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          observer.observe(el);
+          unobservedIds.delete(id);
+        }
+      });
+      if (unobservedIds.size === 0 && pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+
+    tryObserve();
+    if (unobservedIds.size > 0) {
+      pollInterval = setInterval(tryObserve, 100);
+    }
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+      observer.disconnect();
+    };
   }, [location.pathname]);
 
   // Framer motion variants
@@ -115,14 +151,30 @@ export default function Navbar() {
                     const isReallyActive = location.pathname === '/' 
                       ? activeScrollPath === to 
                       : isActive;
-                    return `text-sm font-medium transition-all duration-200 ease-out ${
+                    return `relative text-sm font-medium transition-colors duration-200 ease-out pb-0.5 ${
                       isReallyActive
-                        ? 'text-sage border-b-2 border-sage pb-0.5'
-                        : 'text-charcoal-light hover:text-charcoal hover:border-b-2 hover:border-charcoal-light pb-0.5'
+                        ? 'text-sage'
+                        : 'text-charcoal-light hover:text-charcoal'
                     }`;
                   }}
                 >
-                  {label}
+                  {({ isActive }) => {
+                    const isReallyActive = location.pathname === '/' 
+                      ? activeScrollPath === to 
+                      : isActive;
+                    return (
+                      <>
+                        {label}
+                        {isReallyActive && (
+                          <motion.div
+                            layoutId="nav-underline"
+                            className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-sage rounded-full"
+                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          />
+                        )}
+                      </>
+                    );
+                  }}
                 </NavLink>
               ))}
             </nav>
@@ -218,14 +270,30 @@ export default function Navbar() {
                       const isReallyActive = location.pathname === '/' 
                         ? activeScrollPath === to 
                         : isActive;
-                      return `flex items-center px-4 py-3.5 rounded-2xl text-base font-medium transition-all duration-200 ease-out ${
+                      return `relative flex items-center px-4 py-3.5 rounded-2xl text-base font-medium transition-colors duration-200 ease-out ${
                         isReallyActive
-                          ? 'bg-sage/10 text-sage font-semibold'
+                          ? 'text-sage font-semibold'
                           : 'text-charcoal hover:bg-ivory-dark active:scale-[0.98]'
                       }`;
                     }}
                   >
-                    {label}
+                    {({ isActive }) => {
+                      const isReallyActive = location.pathname === '/' 
+                        ? activeScrollPath === to 
+                        : isActive;
+                      return (
+                        <>
+                          {isReallyActive && (
+                            <motion.div
+                              layoutId="nav-bg-mobile"
+                              className="absolute inset-0 bg-sage/10 rounded-2xl"
+                              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                            />
+                          )}
+                          <span className="relative z-10">{label}</span>
+                        </>
+                      );
+                    }}
                   </NavLink>
                 ))}
               </nav>
