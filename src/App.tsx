@@ -1,17 +1,10 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFAB from './components/WhatsAppFAB';
 import HomePage from './pages/HomePage';
-import ShopPage from './pages/ShopPage';
 import ProductDetailPage from './pages/ProductDetailPage';
-import AboutPage from './pages/AboutPage';
-import TestimonialsPage from './pages/TestimonialsPage';
-import ContactPage from './pages/ContactPage';
-import CombosPage from './pages/CombosPage';
-import FAQPage from './pages/FAQPage';
-import BlogListingPage from './pages/BlogListingPage';
 import BlogPostDetailPage from './pages/BlogPostDetailPage';
 import { CartProvider } from './context/CartContext';
 import ScrollToTop from './components/ScrollToTop';
@@ -28,19 +21,27 @@ function AnimatedRoutes() {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
-        <Route path="/shop" element={<PageTransition><ShopPage /></PageTransition>} />
-        <Route path="/combos" element={<PageTransition><CombosPage /></PageTransition>} />
-        <Route path="/faq" element={<PageTransition><FAQPage /></PageTransition>} />
-        <Route path="/blog" element={<PageTransition><BlogListingPage /></PageTransition>} />
+        
+        {/* Redirect old pages to SPA sections */}
+        <Route path="/shop" element={<Navigate to="/?scrollTo=shop" replace />} />
+        <Route path="/combos" element={<Navigate to="/?scrollTo=combos" replace />} />
+        <Route path="/faq" element={<Navigate to="/?scrollTo=faq" replace />} />
+        <Route path="/blog" element={<Navigate to="/?scrollTo=blog" replace />} />
+        <Route path="/about" element={<Navigate to="/?scrollTo=about" replace />} />
+        <Route path="/testimonials" element={<Navigate to="/?scrollTo=testimonials" replace />} />
+        <Route path="/contact" element={<Navigate to="/?scrollTo=contact" replace />} />
+
+        {/* Individual detail pages */}
         <Route path="/blog/:id" element={<PageTransition><BlogPostDetailPage /></PageTransition>} />
         <Route path="/product/:id" element={<PageTransition><ProductDetailPage /></PageTransition>} />
-        <Route path="/about" element={<PageTransition><AboutPage /></PageTransition>} />
-        <Route path="/testimonials" element={<PageTransition><TestimonialsPage /></PageTransition>} />
-        <Route path="/contact" element={<PageTransition><ContactPage /></PageTransition>} />
+        
+        {/* Policy pages */}
         <Route path="/shipping" element={<PageTransition><ShippingPolicyPage /></PageTransition>} />
         <Route path="/returns" element={<PageTransition><ReturnsPolicyPage /></PageTransition>} />
         <Route path="/privacy" element={<PageTransition><PrivacyPolicyPage /></PageTransition>} />
         <Route path="/terms" element={<PageTransition><TermsPage /></PageTransition>} />
+        
+        {/* 404 */}
         <Route path="*" element={
           <PageTransition>
             <div className="min-h-screen flex items-center justify-center text-center px-4">

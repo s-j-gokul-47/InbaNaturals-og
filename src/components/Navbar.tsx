@@ -1,36 +1,27 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, MessageCircle, Plus, Minus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { WHATSAPP_NUMBER, getWhatsAppCartLink } from '../config';
 
 const navLinks = [
-  { label: 'Home', to: '/' },
-  { label: 'Shop', to: '/shop' },
-  { label: 'Combos', to: '/combos' },
-  { label: 'Blog', to: '/blog' },
-  { label: 'About', to: '/about' },
-  { label: 'Testimonials', to: '/testimonials' },
-  { label: 'FAQ', to: '/faq' },
-  { label: 'Contact', to: '/contact' },
+  { label: 'Home', id: 'hero' },
+  { label: 'Shop', id: 'shop' },
+  { label: 'Combos', id: 'combos' },
+  { label: 'Blog', id: 'blog' },
+  { label: 'About', id: 'about' },
+  { label: 'Testimonials', id: 'testimonials' },
+  { label: 'FAQ', id: 'faq' },
+  { label: 'Contact', id: 'contact' },
 ];
 
-const sectionToPathMap: Record<string, string> = {
-  'hero': '/',
-  'featured-products': '/shop',
-  'special-combos': '/combos',
-  'why-choose-us': '/',
-  'testimonials-home': '/testimonials',
-  'instagram-feed': '/',
-  'faq-home': '/faq',
-  'newsletter': '/contact',
-};
+const sectionIds = navLinks.map(link => link.id);
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-  const [activeScrollPath, setActiveScrollPath] = useState('/');
+  const [activeScrollPath, setActiveScrollPath] = useState('hero');
   const { cart, cartCount, cartTotal, addToCart, removeFromCart } = useCart();
   const location = useLocation();
   const shouldReduceMotion = useReducedMotion();
@@ -61,15 +52,14 @@ export default function Navbar() {
         });
 
         if (changed) {
-          const orderedKeys = Object.keys(sectionToPathMap);
           // Find the first intersecting section in DOM order (highest on the page)
-          const topmostSection = orderedKeys.find(id => activeSections.has(id));
+          const topmostSection = sectionIds.find(id => activeSections.has(id));
           
           if (topmostSection) {
-            setActiveScrollPath(sectionToPathMap[topmostSection]);
+            setActiveScrollPath(topmostSection);
           } else if (window.scrollY < 100) {
             // Fallback: if we are at the top and nothing is intersecting, default to Home
-            setActiveScrollPath('/');
+            setActiveScrollPath('hero');
           }
         }
       },
@@ -83,7 +73,7 @@ export default function Navbar() {
 
     // Because of PageTransitions (AnimatePresence mode="wait"), the new page's DOM
     // might not be present immediately when the location changes. We poll briefly to attach observers.
-    const unobservedIds = new Set(Object.keys(sectionToPathMap));
+    const unobservedIds = new Set(sectionIds);
     let pollInterval: ReturnType<typeof setInterval>;
 
     const tryObserve = () => {
@@ -142,41 +132,39 @@ export default function Navbar() {
 
             {/* Desktop Nav — hidden on mobile */}
             <nav className="hidden lg:flex items-center gap-6">
-              {navLinks.map(({ label, to }) => (
-                <NavLink
-                  key={to}
-                  to={to}
-                  end={to === '/'}
-                  className={({ isActive }) => {
-                    const isReallyActive = location.pathname === '/' 
-                      ? activeScrollPath === to 
-                      : isActive;
-                    return `relative text-sm font-medium transition-colors duration-200 ease-out pb-0.5 ${
+              {navLinks.map(({ label, id }) => {
+                const isReallyActive = location.pathname === '/' ? activeScrollPath === id : false;
+                return (
+                  <Link
+                    key={id}
+                    to={id === 'hero' ? '/' : `/?scrollTo=${id}`}
+                    onClick={(e) => {
+                      if (location.pathname === '/') {
+                        e.preventDefault();
+                        const el = document.getElementById(id);
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth' });
+                          setActiveScrollPath(id);
+                        }
+                      }
+                    }}
+                    className={`relative text-sm font-medium transition-colors duration-200 ease-out pb-0.5 ${
                       isReallyActive
                         ? 'text-sage'
                         : 'text-charcoal-light hover:text-charcoal'
-                    }`;
-                  }}
-                >
-                  {({ isActive }) => {
-                    const isReallyActive = location.pathname === '/' 
-                      ? activeScrollPath === to 
-                      : isActive;
-                    return (
-                      <>
-                        {label}
-                        {isReallyActive && (
-                          <motion.div
-                            layoutId="nav-underline"
-                            className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-sage rounded-full"
-                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                          />
-                        )}
-                      </>
-                    );
-                  }}
-                </NavLink>
-              ))}
+                    }`}
+                  >
+                    {label}
+                    {isReallyActive && (
+                      <motion.div
+                        layoutId="nav-underline"
+                        className="absolute -bottom-0.5 left-0 right-0 h-0.5 bg-sage rounded-full"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Right-side actions */}
@@ -260,42 +248,40 @@ export default function Navbar() {
 
               {/* Nav links */}
               <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-                {navLinks.map(({ label, to }) => (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    end={to === '/'}
-                    onClick={() => setMobileOpen(false)}
-                    className={({ isActive }) => {
-                      const isReallyActive = location.pathname === '/' 
-                        ? activeScrollPath === to 
-                        : isActive;
-                      return `relative flex items-center px-4 py-3.5 rounded-2xl text-base font-medium transition-colors duration-200 ease-out ${
+                {navLinks.map(({ label, id }) => {
+                  const isReallyActive = location.pathname === '/' ? activeScrollPath === id : false;
+                  return (
+                    <Link
+                      key={id}
+                      to={id === 'hero' ? '/' : `/?scrollTo=${id}`}
+                      onClick={(e) => {
+                        if (location.pathname === '/') {
+                          e.preventDefault();
+                          const el = document.getElementById(id);
+                          if (el) {
+                            el.scrollIntoView({ behavior: 'smooth' });
+                            setActiveScrollPath(id);
+                          }
+                        }
+                        setMobileOpen(false);
+                      }}
+                      className={`relative flex items-center px-4 py-3.5 rounded-2xl text-base font-medium transition-colors duration-200 ease-out ${
                         isReallyActive
                           ? 'text-sage font-semibold'
                           : 'text-charcoal hover:bg-ivory-dark active:scale-[0.98]'
-                      }`;
-                    }}
-                  >
-                    {({ isActive }) => {
-                      const isReallyActive = location.pathname === '/' 
-                        ? activeScrollPath === to 
-                        : isActive;
-                      return (
-                        <>
-                          {isReallyActive && (
-                            <motion.div
-                              layoutId="nav-bg-mobile"
-                              className="absolute inset-0 bg-sage/10 rounded-2xl"
-                              transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                            />
-                          )}
-                          <span className="relative z-10">{label}</span>
-                        </>
-                      );
-                    }}
-                  </NavLink>
-                ))}
+                      }`}
+                    >
+                      {isReallyActive && (
+                        <motion.div
+                          layoutId="nav-bg-mobile"
+                          className="absolute inset-0 bg-sage/10 rounded-2xl"
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10">{label}</span>
+                    </Link>
+                  );
+                })}
               </nav>
 
               {/* Drawer footer with WhatsApp CTA */}
