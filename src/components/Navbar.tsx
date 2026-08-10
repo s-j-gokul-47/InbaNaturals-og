@@ -4,6 +4,7 @@ import { ShoppingCart, Menu, X, MessageCircle, Plus, Minus, Trash2 } from 'lucid
 import { motion, AnimatePresence, useReducedMotion, type Variants } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { WHATSAPP_NUMBER, getWhatsAppCartLink } from '../config';
+import { supabase } from '../lib/supabase';
 
 const navLinks = [
   { label: 'Home', id: 'hero' },
@@ -420,7 +421,21 @@ export default function Navbar() {
                     href={getWhatsAppCartLink(cart, cartTotal)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    onClick={() => setCartOpen(false)}
+                    onClick={() => {
+                      setCartOpen(false);
+                      // Log to Supabase asynchronously without blocking WhatsApp navigation
+                      (async () => {
+                        try {
+                          const { error } = await supabase.from('orders').insert({ 
+                            items: cart, 
+                            total_amount: cartTotal 
+                          });
+                          if (error) console.error('Supabase async error:', error);
+                        } catch (err) {
+                          console.error('Supabase sync error:', err);
+                        }
+                      })();
+                    }}
                     className="flex items-center justify-center gap-2 w-full py-4 bg-sage hover:bg-sage-dark text-white rounded-2xl text-sm font-semibold transition-all duration-200 ease-out active:scale-[0.98]"
                   >
                     <MessageCircle size={18} />

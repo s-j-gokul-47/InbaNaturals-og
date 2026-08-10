@@ -14,6 +14,7 @@ import { products } from '../data/products';
 import { blogPosts } from '../data/blog';
 import { INSTAGRAM_URL, getWhatsAppComboLink, WHATSAPP_NUMBER } from '../config';
 import { Helmet } from 'react-helmet-async';
+import { supabase } from '../lib/supabase';
 
 type FilterCategory = 'all' | 'hair' | 'face';
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name';
@@ -184,6 +185,33 @@ export default function HomePage() {
     const selectedProductNames = selectedIds.map(
       (id) => products.find((p) => p.id === id)?.name || id
     );
+
+    const { finalTotal } = calculateComboPrices(combo);
+
+    // Log to Supabase asynchronously
+    (async () => {
+      try {
+        const items = selectedIds.map(id => {
+          const prod = products.find(p => p.id === id);
+          return {
+            id: id,
+            name: prod?.name || id,
+            price: prod?.price || '',
+            size: prod?.sizes[0] || 'Standard',
+            quantity: 1,
+            image: prod?.image || ''
+          };
+        });
+
+        const { error } = await supabase.from('orders').insert({
+          items: items,
+          total_amount: finalTotal
+        });
+        if (error) console.error('Supabase async error:', error);
+      } catch (err) {
+        console.error('Supabase sync error:', err);
+      }
+    })();
 
     const waLink = getWhatsAppComboLink(combo.name, selectedProductNames);
     window.open(waLink, '_blank');

@@ -7,6 +7,7 @@ import StarRating from '../components/StarRating';
 import { products } from '../data/products';
 import { useCart } from '../context/CartContext';
 import { getWhatsAppProductLink } from '../config';
+import { supabase } from '../lib/supabase';
 import { Helmet } from 'react-helmet-async';
 
 type Tab = 'description' | 'howToUse' | 'ingredients';
@@ -240,6 +241,26 @@ export default function ProductDetailPage() {
                 href={getWhatsAppProductLink(product.name, product.sizes[selectedSize])}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => {
+                  (async () => {
+                    try {
+                      const { error } = await supabase.from('orders').insert({
+                        items: [{
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          size: product.sizes[selectedSize],
+                          quantity: 1,
+                          image: product.image
+                        }],
+                        total_amount: parseInt(product.price.replace(/\D/g, ''))
+                      });
+                      if (error) console.error('Supabase async error:', error);
+                    } catch (err) {
+                      console.error('Supabase sync error:', err);
+                    }
+                  })();
+                }}
                 className="w-full flex items-center justify-center gap-2.5 bg-terracotta hover:bg-terracotta-dark text-white font-semibold py-4 rounded-2xl transition-all duration-200 ease-out active:scale-[0.98] hover:shadow-lg hover:-translate-y-0.5 text-base animate-pulse shadow-md shadow-terracotta/20 hover:animate-none cursor-pointer"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008 0c3.205.001 6.222 1.246 8.49 3.52 2.27 2.272 3.513 5.293 3.511 8.497-.004 6.657-5.34 11.997-11.95 11.997-2.005-.001-3.973-.5-5.739-1.453L0 24zm6.59-4.846c1.6.95 3.197 1.451 4.821 1.452 5.51 0 9.995-4.493 9.998-10.011.002-2.673-1.04-5.186-2.93-7.079-1.89-1.89-4.407-2.93-7.08-2.931-5.514 0-10.002 4.493-10.005 10.013-.001 1.737.479 3.427 1.39 4.908L1.008 22.91l4.088-1.072L6.647 19.15z"/></svg>

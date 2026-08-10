@@ -129,3 +129,16 @@ Work through this top to bottom. Phase 1 items are broken/fake things a real vis
 ---
 
 *Generated from a full code review of the InbaNaturals repo (React 19 + Vite + TypeScript + Tailwind, WhatsApp-order model). Build was verified to compile cleanly with zero TypeScript errors — all items above are content/config gaps, not code-quality issues.*
+
+
+
+
+
+
+
+
+
+
+
+
+SUPABASE : Inbanaturals@2006
