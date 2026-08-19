@@ -8,20 +8,9 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-node_modules/
 dist
-dist/
 dist-ssr
 *.local
-.vite/
-
-# Python
-__pycache__/
-venv/
-*.pyc
-
-# Environment
-.env
 
 # Editor directories and files
 .vscode/*
