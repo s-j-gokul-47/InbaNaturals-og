@@ -142,3 +142,6 @@ Work through this top to bottom. Phase 1 items are broken/fake things a real vis
 
 
 SUPABASE : Inbanaturals@2006
+anon : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxd2tvd2hkcmdtc2J1emt1Z2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzODA4NzUsImV4cCI6MjEwMTk1Njg3NX0.U5fJ_ffPv5A3c9DSBBk6gK7MhautUuvMtjRyTDjBMtU
+
+project url : https://rqwkowhdrgmsbuzkugcu.supabase.co
