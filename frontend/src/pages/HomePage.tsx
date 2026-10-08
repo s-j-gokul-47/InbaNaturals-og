@@ -107,7 +107,7 @@ export default function HomePage() {
               {/* Main placeholder */}
               <div className="w-80 h-80 md:w-96 md:h-96 rounded-[3rem] shadow-2xl overflow-hidden border-4 border-white/60">
                 <img
-                  src={hairOilImg}
+                  src={faceSerumImg}
                   alt="InbaNaturals hero product"
                   className="w-full h-full object-cover"
                 />

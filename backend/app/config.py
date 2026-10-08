@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     # JWT
     SECRET_KEY: str = "inba-naturals-dev-secret-key-change-in-production"
     JWT_ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     # CORS
     CORS_ORIGINS: str = "http://localhost:5173,http://localhost:5174"

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { ShoppingCart, Menu, X, MessageCircle, User, LogOut, LayoutDashboard, ShoppingBag, Wallet } from 'lucide-react';
+import { ShoppingCart, Menu, X, MessageCircle, LogOut, LayoutDashboard, ShoppingBag, Wallet } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { WHATSAPP_NUMBER } from '../config';

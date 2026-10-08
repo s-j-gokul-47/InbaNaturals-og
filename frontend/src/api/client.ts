@@ -12,13 +12,13 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response: on 401, clear token + redirect to /login
+// Response: on 401, clear token and dispatch unauthorized event
 api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      window.dispatchEvent(new CustomEvent('auth:unauthorized'));
     }
     return Promise.reject(err);
   }

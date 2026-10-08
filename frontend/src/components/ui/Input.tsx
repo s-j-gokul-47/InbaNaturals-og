@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ReactNode } from 'react';
+import type { ChangeEvent, ReactNode } from 'react';
 
 interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label?: string;

@@ -19,7 +19,7 @@ export default function TestimonialsPage() {
         <h1 className="font-serif text-5xl text-charcoal mt-2 mb-3">Customer Love</h1>
         <LeafDivider />
         <p className="text-charcoal-light mt-4 max-w-md mx-auto text-sm leading-relaxed">
-          Don't just take our word for it — hear from our community of natural beauty believers.
+          Hear from our community of natural beauty believers. All reviews are collected from verified purchasers and community feedback.
         </p>
       </div>
 
