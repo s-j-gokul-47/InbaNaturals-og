@@ -1,0 +1,147 @@
+# InbaNaturals — Website Fix & Launch Checklist
+
+Work through this top to bottom. Phase 1 items are broken/fake things a real visitor would hit immediately — fix those first. Everything is grouped by what you're actually doing, with exact file paths so you know where to go.
+
+---
+
+## Phase 1 — Fix what's actually broken
+
+### 1. Cart button does nothing
+- **File:** `src/components/Navbar.tsx`
+- **Problem:** The cart icon shows a live item count but has no `onClick`. There's no cart page/drawer anywhere in the app.
+- **Fix — pick one:**
+  - [ ] **Option A (recommended, less work):** Remove the cart icon/count from the navbar entirely and rely only on the "Order via WhatsApp" button on each product (already working via `getWhatsAppProductLink` in `src/config.ts`).
+  - [ ] **Option B:** Build a real cart drawer/page that lists items from `CartContext`, lets you adjust quantity/remove items, and sends the whole cart to WhatsApp as one message.
+
+### 2. Contact form doesn't send anything
+- **File:** `src/pages/ContactPage.tsx`
+- **Problem:** `handleSubmit` just sets `submitted = true`. No email, no storage, message is lost.
+- **Fix:**
+  - [ ] Wire it to a form backend — easiest options: [Formspree](https://formspree.io), [EmailJS](https://www.emailjs.com), or [Web3Forms](https://web3forms.com) (all have free tiers, no server needed).
+  - [ ] Or write a small serverless function (Vercel/Netlify function) that emails you the submission.
+  - [ ] Test that a real submission actually reaches your inbox before calling this done.
+
+---
+
+## Phase 2 — Replace placeholder business info
+
+### 3. Fake contact details
+- [ ] `src/config.ts` — replace `WHATSAPP_NUMBER = '919999999999'` with your real WhatsApp Business number.
+- [ ] `src/config.ts` — replace `INSTAGRAM_HANDLE` / `INSTAGRAM_URL` if not final.
+- [ ] `src/pages/ContactPage.tsx` — replace `+91 00000 00000` (phone), confirm `hello@inbanaturals.com` is real and monitored, replace "Bangalore, Karnataka, India" with your real address or remove the address block if you don't want it public.
+- [ ] `src/components/Footer.tsx` — check for any other placeholder contact/social links.
+
+### 4. Legal pages are Lorem Ipsum
+- **File:** `src/App.tsx` (the `PolicyPage` component, used for `/shipping`, `/returns`, `/privacy`, `/terms`)
+- **Problem:** All four pages render 6 sections of literal placeholder Latin text.
+- **Fix:**
+  - [ ] Write a real **Shipping Policy** (delivery times, areas served, charges).
+  - [ ] Write a real **Returns & Refunds Policy** (window, condition, process).
+  - [ ] Write a real **Privacy Policy** (what data you collect via the contact form/WhatsApp, how it's used/stored).
+  - [ ] Write real **Terms of Service**.
+  - [ ] Once written, either replace content inline in `App.tsx` or split each into its own page component for easier editing — your call.
+  - [ ] *Note: if you plan to accept real payments, these pages aren't optional — they're generally required by payment gateways (Razorpay, etc.) before they'll approve your account.*
+
+---
+
+## Phase 3 — Content & trust
+
+### 5. Fake testimonials
+- **File:** `src/pages/TestimonialsPage.tsx`
+- **Problem:** 6 named customers with 5-star reviews are entirely made up (Priya S., Ananya R., etc.). Publishing invented reviews as real customer feedback carries real legal risk under India's Consumer Protection Act rules on fake reviews.
+- **Fix:**
+  - [ ] Replace with real customer reviews as you collect them (screenshots from WhatsApp/Instagram DMs work great as social proof too, without needing a "review" format).
+  - [ ] Until you have real reviews, either remove this page/section or clearly mark it as sample/placeholder content — don't publish it as-is representing real customers.
+
+### 6. Placeholder product & blog images
+- **Files:** `src/data/products.ts`, `src/data/blog.ts`, referenced in `AboutPage.tsx`, `HomePage.tsx`
+- **Problem:** Every image is a `placehold.co` colored box with text like "Hair+Oil" — not real photography.
+- **Fix:**
+  - [ ] Get real product photography for all 4 products (Hair Oil, Hair Pack, Face Pack, Face Serum) — packaging shots + lifestyle shots.
+  - [ ] Get/commission images for the 4 blog posts.
+  - [ ] Replace the `hero.png` in `src/assets/` if it's also a placeholder — check it.
+  - [ ] Drop final images into `src/assets/` and update the `image:` fields in `products.ts` / `blog.ts`.
+
+### 7. Leftover Lorem Ipsum in product copy
+- **File:** `src/data/products.ts`
+- **Problem:** Real descriptions are mixed with literal "Lorem ipsum dolor sit amet..." text.
+- **Fix:**
+  - [ ] Rewrite all 4 product descriptions fully in your own voice — no leftover filler text.
+
+### 8. Favicon mismatch
+- **Files:** `index.html` (inline sage-green leaf SVG, currently used) vs `public/favicon.svg` (unrelated purple abstract shape, not referenced anywhere — looks like a leftover default asset)
+- **Fix:**
+  - [ ] Design one proper favicon set that matches your actual brand (sage/ivory palette) — favicon.svg/ico, apple-touch-icon, and a small web manifest for mobile home-screen icons.
+  - [ ] Delete the unused purple `public/favicon.svg` once replaced.
+
+---
+
+## Phase 4 — SEO & discoverability
+
+### 9. No robots.txt or sitemap.xml
+- [ ] Add `public/robots.txt` (allow all, point to sitemap).
+- [ ] Add `public/sitemap.xml` listing all routes (`/`, `/shop`, `/combos`, `/faq`, `/blog`, `/about`, `/testimonials`, `/contact`, product pages, blog post pages).
+
+### 10. Meta tags are static across every page
+- **File:** `index.html`
+- **Problem:** One fixed `<title>`/description for the whole site — a shared link to a specific product or blog post shows the same generic title, hurting SEO and link previews.
+- **Fix:**
+  - [ ] Add `react-helmet-async` (or similar) and set a unique title/description per route, especially `ProductDetailPage.tsx` and `BlogPostDetailPage.tsx`.
+  - [ ] Add an `og:image` (currently missing) so shared links show a real preview image.
+
+### 11. No analytics
+- [ ] Add Google Analytics 4 and/or Meta Pixel before you start driving traffic or running ads — you want data from day one, not after.
+
+### 12. Structured data (optional but valuable)
+- [ ] Add JSON-LD `Product` and `Organization` schema once real content/images are in — helps with Google rich results (price, ratings, etc.).
+
+---
+
+## Phase 5 — Deployment readiness
+
+### 13. SPA routing needs host configuration
+- **Problem:** The app uses `BrowserRouter`, which requires a server-side rewrite rule, or direct links like `/product/hair-oil` will 404 on page refresh.
+- **Fix (pick based on host):**
+  - [ ] Netlify → add `public/_redirects` with `/* /index.html 200`
+  - [ ] Vercel → add `vercel.json` with a rewrite rule to `index.html`
+  - [ ] Other static host → check their SPA fallback config
+
+### 14. Housekeeping
+- [ ] `package.json` — rename `"name": "sister-sproject"` to something sensible like `"inbanaturals"`.
+- [ ] Do a final full click-through of every route on both desktop and mobile before going live.
+
+---
+
+## Suggested order to actually work through this
+
+1. Contact form (Phase 1, #2) — quick win, unblocks real customer inquiries
+2. Cart decision (Phase 1, #1) — decide keep-and-build vs. remove, then do it
+3. Real business info everywhere (Phase 2, #3)
+4. Legal pages (Phase 2, #4) — needed before any real payment integration
+5. Product photography + copy (Phase 3, #6, #7) — biggest visual impact
+6. Testimonials (Phase 3, #5) — swap in real ones as they come in
+7. Favicon (Phase 3, #8)
+8. SEO basics — robots.txt, sitemap, per-page meta, og:image (Phase 4)
+9. Analytics (Phase 4, #11)
+10. Deployment config for your chosen host (Phase 5, #13)
+11. Final housekeeping + full click-through (Phase 5, #14)
+
+---
+
+*Generated from a full code review of the InbaNaturals repo (React 19 + Vite + TypeScript + Tailwind, WhatsApp-order model). Build was verified to compile cleanly with zero TypeScript errors — all items above are content/config gaps, not code-quality issues.*
+
+
+
+
+
+
+
+
+
+
+
+
+SUPABASE : Inbanaturals@2006
+anon : eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJxd2tvd2hkcmdtc2J1emt1Z2N1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzODA4NzUsImV4cCI6MjEwMTk1Njg3NX0.U5fJ_ffPv5A3c9DSBBk6gK7MhautUuvMtjRyTDjBMtU
+
+project url : https://rqwkowhdrgmsbuzkugcu.supabase.co

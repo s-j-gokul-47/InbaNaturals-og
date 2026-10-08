@@ -1,0 +1,15 @@
+{
+  "name": "InbaNaturals",
+  "short_name": "InbaNaturals",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FAF6EE",
+  "theme_color": "#7A9471",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
