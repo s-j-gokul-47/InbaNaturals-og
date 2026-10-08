@@ -29,7 +29,9 @@ export default function LoginPage() {
       navigate(from, { replace: true });
     } catch (err: any) {
       let errorMsg = 'Invalid credentials or unverified email.';
-      if (err.response?.data?.detail) {
+      if (!err.response) {
+        errorMsg = 'Backend server is offline. Please start the backend server.';
+      } else if (err.response?.data?.detail) {
         errorMsg = typeof err.response.data.detail === 'string' 
           ? err.response.data.detail 
           : Array.isArray(err.response.data.detail) 

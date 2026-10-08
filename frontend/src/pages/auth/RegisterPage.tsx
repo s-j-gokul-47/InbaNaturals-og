@@ -43,8 +43,14 @@ export default function RegisterPage() {
       newErrors.email = 'Please enter a valid email address';
     }
     
-    if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
+    if (formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    } else if (!/[A-Z]/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one uppercase letter';
+    } else if (!/[a-z]/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one lowercase letter';
+    } else if (!/[0-9]/.test(formData.password)) {
+      newErrors.password = 'Password must contain at least one number';
     }
     
     if (formData.password !== formData.confirm_password) {
@@ -71,7 +77,9 @@ export default function RegisterPage() {
       navigate('/');
     } catch (err: any) {
       let errorMsg = 'An error occurred during registration.';
-      if (err.response?.data?.detail) {
+      if (!err.response) {
+        errorMsg = 'Backend server is offline. Please start the backend server.';
+      } else if (err.response?.data?.detail) {
         errorMsg = typeof err.response.data.detail === 'string' 
           ? err.response.data.detail 
           : Array.isArray(err.response.data.detail) 

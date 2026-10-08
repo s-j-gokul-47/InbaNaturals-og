@@ -89,11 +89,7 @@ def login(request: Request, payload: LoginRequest, db: Session = Depends(get_db)
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
-    if not user.is_verified:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Please verify your email before logging in",
-        )
+    # Email verification check removed for a smoother workflow
 
     token = create_access_token(data={"sub": str(user.id)})
     return TokenResponse(access_token=token)
