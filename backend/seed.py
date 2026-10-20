@@ -1,12 +1,12 @@
-from app.database import SessionLocal, engine, Base
+from app.database import SyncSessionLocal, sync_engine, Base
 from app.models.user import User
 from app.models.product import Product
 from app.utils.security import get_password_hash
 
 
 def seed():
-    Base.metadata.create_all(bind=engine)
-    db = SessionLocal()
+    Base.metadata.create_all(bind=sync_engine)
+    db = SyncSessionLocal()
 
     # Admin user
     admin = db.query(User).filter(User.username == "admin").first()

@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { Trash2, Plus, Minus, ArrowRight, Loader2 } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowRight, Loader2, MessageCircle } from 'lucide-react';
 import LeafDivider from '../components/LeafDivider';
+import { getWhatsAppCartLink } from '../config';
 
 export default function CartPage() {
   const { user } = useAuth();
@@ -155,6 +156,16 @@ export default function CartPage() {
               >
                 Proceed to Checkout <ArrowRight size={20} />
               </Link>
+
+              <a
+                href={getWhatsAppCartLink(cart, cartTotal)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full mt-3 border-2 border-sage text-sage hover:bg-sage hover:text-white py-3.5 rounded-full font-medium transition-colors duration-300 flex items-center justify-center gap-2 text-sm"
+              >
+                <MessageCircle size={18} />
+                Order via WhatsApp Instead
+              </a>
             </div>
           </div>
         </div>

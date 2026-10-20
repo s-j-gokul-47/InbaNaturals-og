@@ -1,31 +1,78 @@
 import { useState, type FormEvent } from 'react';
-import { Phone, Mail, MessageCircle, Clock, MapPin, Send } from 'lucide-react';
+import { Phone, Mail, MessageCircle, Clock, MapPin, Send, Loader2 } from 'lucide-react';
 import LeafDivider from '../components/LeafDivider';
+import { WHATSAPP_NUMBER } from '../config';
+import { contactApi, getApiErrorMessage } from '../api/client';
 
 export default function ContactPage() {
   const [formState, setFormState] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+
+    if (!formState.name.trim() || !formState.email.trim() || !formState.message.trim()) {
+      setError('Please fill in all required fields.');
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formState.email)) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // First attempt submission via FastAPI contact endpoint
+      await contactApi.submit(formState);
+      setSubmitted(true);
+    } catch (backendErr) {
+      console.warn('Backend contact API unavailable, attempting Web3Forms fallback...', backendErr);
+      try {
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            access_key: '27812200-cf31-43a4-8dd4-ed7e2ad2e73f',
+            ...formState,
+          }),
+        });
+        const result = await response.json();
+        if (response.status === 200 && result.success) {
+          setSubmitted(true);
+        } else {
+          setError(result.message || getApiErrorMessage(backendErr, 'Failed to send message. Please try again.'));
+        }
+      } catch (fallbackErr) {
+        console.error('Contact submission error:', fallbackErr);
+        setError('Failed to send message. Please reach us directly on WhatsApp or email.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen">
-
       {/* Page header */}
       <div className="bg-ivory-dark py-14 text-center border-b border-ivory-dark">
         <span className="text-sage text-xs font-medium uppercase tracking-widest">We're Here For You</span>
         <h1 className="font-serif text-5xl text-charcoal mt-2 mb-3">Get in Touch</h1>
         <LeafDivider />
         <p className="text-charcoal-light mt-4 max-w-md mx-auto text-sm leading-relaxed">
-          Have a question about our products or your order? We'd love to hear from you. We typically respond within 24 hours.
+          Have a question about our botanical products or your order? We'd love to hear from you. We typically respond within 24 hours.
         </p>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid lg:grid-cols-3 gap-10">
-
         {/* Contact info card */}
         <div className="space-y-6">
           <div className="bg-white rounded-2xl shadow-sm border border-ivory-dark p-7">
@@ -37,7 +84,9 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-xs text-charcoal-light font-medium uppercase tracking-wider mb-0.5">Phone</p>
-                  <p className="text-charcoal text-sm font-medium">+91 00000 00000</p>
+                  <a href="tel:+918610866523" className="text-charcoal text-sm font-medium hover:text-sage transition-colors">
+                    +91 86108 66523
+                  </a>
                 </div>
               </li>
               <li className="flex items-start gap-4">
@@ -46,7 +95,9 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-xs text-charcoal-light font-medium uppercase tracking-wider mb-0.5">Email</p>
-                  <p className="text-charcoal text-sm font-medium">hello@inbanaturals.com</p>
+                  <a href="mailto:hello@inbanaturals.com" className="text-charcoal text-sm font-medium hover:text-sage transition-colors">
+                    hello@inbanaturals.com
+                  </a>
                 </div>
               </li>
               <li className="flex items-start gap-4">
@@ -64,7 +115,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-xs text-charcoal-light font-medium uppercase tracking-wider mb-0.5">Location</p>
-                  <p className="text-charcoal text-sm font-medium">Bangalore, Karnataka, India</p>
+                  <p className="text-charcoal text-sm font-medium">Coimbatore & Bangalore, India</p>
                 </div>
               </li>
             </ul>
@@ -78,10 +129,10 @@ export default function ContactPage() {
             <MessageCircle size={28} className="mb-3" />
             <h3 className="font-serif text-xl font-semibold mb-2">Chat on WhatsApp</h3>
             <p className="text-white/80 text-sm mb-4 leading-relaxed">
-              Get instant replies! Message us directly on WhatsApp for fast support.
+              Get instant replies! Message us directly on WhatsApp for orders, recommendations, and fast customer support.
             </p>
             <a
-              href="https://wa.me/910000000000"
+              href={`https://wa.me/${WHATSAPP_NUMBER}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 bg-white text-green-700 font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-green-50 transition-colors"
@@ -96,7 +147,7 @@ export default function ContactPage() {
           <div className="bg-white rounded-2xl shadow-sm border border-ivory-dark p-8">
             <h2 className="font-serif text-2xl text-charcoal mb-2">Send us a Message</h2>
             <p className="text-charcoal-light text-sm mb-7">
-              Fill in the form below and we'll get back to you as soon as possible.
+              Fill in the form below and our team will get back to you as soon as possible.
             </p>
 
             {submitted ? (
@@ -106,17 +157,25 @@ export default function ContactPage() {
                 </div>
                 <h3 className="font-serif text-2xl text-charcoal mb-2">Message Sent! 🌿</h3>
                 <p className="text-charcoal-light text-sm">
-                  Thank you for reaching out. We'll reply within 24 hours.
+                  Thank you for reaching out to InbaNaturals. We've received your inquiry and will reply within 24 hours.
                 </p>
                 <button
-                  onClick={() => { setSubmitted(false); setFormState({ name: '', email: '', subject: '', message: '' }); }}
-                  className="mt-6 text-sage text-sm font-medium hover:underline"
+                  onClick={() => {
+                    setSubmitted(false);
+                    setFormState({ name: '', email: '', subject: '', message: '' });
+                  }}
+                  className="mt-6 text-sage text-sm font-medium hover:underline cursor-pointer"
                 >
                   Send another message
                 </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+                {error && (
+                  <div className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm border border-red-100">
+                    {error}
+                  </div>
+                )}
                 <div className="grid sm:grid-cols-2 gap-5">
                   <div>
                     <label htmlFor="contact-name" className="block text-sm font-medium text-charcoal mb-1.5">
@@ -156,7 +215,7 @@ export default function ContactPage() {
                     type="text"
                     value={formState.subject}
                     onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
-                    placeholder="e.g. Order query, Product info…"
+                    placeholder="e.g. Order inquiry, Product recommendations…"
                     className="w-full px-4 py-3 rounded-xl border border-ivory-dark bg-ivory text-charcoal text-sm placeholder-charcoal-light focus:outline-none focus:border-sage transition-colors"
                   />
                 </div>
@@ -176,22 +235,23 @@ export default function ContactPage() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-sage hover:bg-sage-dark text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2 bg-sage hover:bg-sage-dark text-white font-semibold py-4 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-60 cursor-pointer"
                 >
-                  <Send size={18} />
-                  Send Message
+                  {loading ? (
+                    <>
+                      <Loader2 size={18} className="animate-spin" />
+                      Sending Message…
+                    </>
+                  ) : (
+                    <>
+                      <Send size={18} />
+                      Send Message
+                    </>
+                  )}
                 </button>
               </form>
             )}
-          </div>
-
-          {/* Map placeholder */}
-          <div className="mt-6 rounded-2xl overflow-hidden border border-ivory-dark shadow-sm h-48 bg-ivory-dark flex items-center justify-center">
-            <div className="text-center text-charcoal-light">
-              <MapPin size={32} className="mx-auto mb-2 text-sage" />
-              <p className="text-sm font-medium">Map Placeholder</p>
-              <p className="text-xs">Bangalore, Karnataka, India</p>
-            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFAB from './components/WhatsAppFAB';
@@ -120,10 +121,11 @@ function PolicyPage({ title }: { title: string }) {
 
 export default function App() {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <CartProvider>
-          <BrowserRouter>
+    <HelmetProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <CartProvider>
+            <BrowserRouter>
         <ScrollToTop />
         <div className="flex flex-col min-h-screen">
           <Navbar />
@@ -177,10 +179,11 @@ export default function App() {
           <Footer />
           <WhatsAppFAB />
         </div>
-      </BrowserRouter>
-        </CartProvider>
-      </AuthProvider>
-    </ToastProvider>
+        </BrowserRouter>
+          </CartProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </HelmetProvider>
   );
 }
 

@@ -70,6 +70,7 @@ class ProductListOut(BaseModel):
     category: str
     image_url: str
     in_stock: bool
+    stock_quantity: int = 0
     is_featured: bool
     created_at: Optional[datetime] = None
 

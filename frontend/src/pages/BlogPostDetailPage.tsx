@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { blogPosts } from '../data/blog';
 import LeafDivider from '../components/LeafDivider';
 import { ArrowLeft, ArrowRight, Calendar, User, Clock } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function BlogPostDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,12 @@ export default function BlogPostDetailPage() {
 
   return (
     <div className="min-h-screen pb-20 bg-ivory">
+      <SEO
+        title={post.title}
+        description={post.excerpt}
+        image={post.image}
+        url={`https://www.inbanaturals.com/blog/${post.id}`}
+      />
       {/* Breadcrumb */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Link

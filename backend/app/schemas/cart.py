@@ -26,6 +26,9 @@ class CartItemOut(BaseModel):
     product_image: str = ""
     product_category: str = ""
     size_label: str = ""
+    stock_quantity: int = 0
+    in_stock: bool = True
+    is_available: bool = True
 
     model_config = {"from_attributes": True}
 

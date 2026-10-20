@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,8 +9,8 @@ from slowapi.errors import RateLimitExceeded
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.config import settings
-from app.database import Base, engine
-from app.routers import admin, auth, cart, orders, products, reviews, wallet
+from app.database import Base, async_engine, engine
+from app.routers import admin, auth, cart, contact, orders, products, reviews, wallet
 from app.utils.limiter import limiter
 import app.models  # noqa: F401 — register all models with Base.metadata
 
@@ -30,8 +31,24 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
+from app.services.blacklist import token_blacklist
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if not settings.DEBUG and "change" in settings.SECRET_KEY.lower():
+        logger.warning(
+            "WARNING: Default SECRET_KEY in use while DEBUG=False. Please set a secure SECRET_KEY in environment variables."
+        )
+    logger.info("Application starting up. Database migrations managed via Alembic.")
+    yield
+    logger.info("Application shutting down. Disposing resources...")
+    await token_blacklist.close()
+    await async_engine.dispose()
+
+
 def create_app() -> FastAPI:
-    app = FastAPI(title=settings.APP_NAME, debug=settings.DEBUG)
+    app = FastAPI(title=settings.APP_NAME, debug=settings.DEBUG, lifespan=lifespan)
     app.state.limiter = limiter
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -65,20 +82,14 @@ def create_app() -> FastAPI:
     app.include_router(orders.router, prefix="/api", tags=["orders"])
     app.include_router(wallet.router, prefix="/api", tags=["wallet"])
     app.include_router(reviews.router, prefix="/api", tags=["reviews"])
+    app.include_router(contact.router, prefix="/api", tags=["contact"])
     app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
 
     @app.get("/api/health")
-    def health_check():
+    async def health_check():
         return {"status": "ok", "app": settings.APP_NAME}
 
     return app
 
 
 app = create_app()
-
-
-@app.on_event("startup")
-def on_startup():
-    if not settings.DEBUG and "change" in settings.SECRET_KEY.lower():
-        logger.warning("WARNING: Default SECRET_KEY in use while DEBUG=False. Please set a secure SECRET_KEY in environment variables.")
-    Base.metadata.create_all(bind=engine)

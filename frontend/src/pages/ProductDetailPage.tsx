@@ -8,6 +8,7 @@ import api from '../api/client';
 import type { Product, ProductListItem, Review } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/ui/Toast';
+import SEO from '../components/SEO';
 
 // Fallback secondary images since backend doesn't store them yet
 import hairOilImg2 from '../assets/images/products/hair-oil-2.jpg';
@@ -148,6 +149,12 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title={product.name}
+        description={product.tagline || product.description.slice(0, 160)}
+        image={product.image_url}
+        url={`https://www.inbanaturals.com/product/${product.slug}`}
+      />
 
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">

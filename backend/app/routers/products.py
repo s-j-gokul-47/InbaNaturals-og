@@ -1,35 +1,38 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.product import Product
 from app.schemas.product import ProductListOut, ProductOut
+from app.services.search import search_service
 
 router = APIRouter()
 
 
 @router.get("/products", response_model=list[ProductListOut])
-def list_products(
+async def list_products(
     category: Optional[str] = Query(None),
     featured: Optional[bool] = Query(None),
     search: Optional[str] = Query(None),
     sort: Optional[str] = Query("newest"),
     page: int = Query(1, ge=1),
     page_size: int = Query(12, ge=1, le=50),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
-    query = db.query(Product)
+    query = select(Product)
 
     if category:
-        query = query.filter(Product.category == category)
-    if featured:
-        query = query.filter(Product.is_featured == True)
-    if search:
-        query = query.filter(
-            Product.name.ilike(f"%{search}%") | Product.tagline.ilike(f"%{search}%")
-        )
+        query = query.where(Product.category == category)
+    if featured is not None:
+        query = query.where(Product.is_featured == featured)
+    if search and search.strip():
+        matching_ids = await search_service.search_product_ids(db, search.strip(), limit=200)
+        if not matching_ids:
+            return []
+        query = query.where(Product.id.in_(matching_ids))
 
     if sort == "price_asc":
         query = query.order_by(Product.price.asc())
@@ -40,23 +43,24 @@ def list_products(
     else:
         query = query.order_by(Product.created_at.desc())
 
-    total = query.count()
-    products = query.offset((page - 1) * page_size).limit(page_size).all()
-
-    return products
+    query = query.offset((page - 1) * page_size).limit(page_size)
+    result = await db.execute(query)
+    return result.scalars().all()
 
 
 @router.get("/products/{product_id}", response_model=ProductOut)
-def get_product(product_id: int, db: Session = Depends(get_db)):
-    product = db.query(Product).filter(Product.id == product_id).first()
+async def get_product(product_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Product).where(Product.id == product_id))
+    product = result.scalars().first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
 
 
 @router.get("/products/slug/{slug}", response_model=ProductOut)
-def get_product_by_slug(slug: str, db: Session = Depends(get_db)):
-    product = db.query(Product).filter(Product.slug == slug).first()
+async def get_product_by_slug(slug: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Product).where(Product.slug == slug))
+    product = result.scalars().first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product

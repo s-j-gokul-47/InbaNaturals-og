@@ -7,6 +7,7 @@
     "dev": "vite",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && python -m uvicorn app.main:app --reload",
+    "test:backend": "cd backend && python -m pytest",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.product import Product
@@ -12,32 +13,34 @@ router = APIRouter()
 
 
 @router.get("/products/{product_id}/reviews", response_model=list[ReviewOut])
-def list_reviews(product_id: int, db: Session = Depends(get_db)):
-    product = db.query(Product).filter(Product.id == product_id).first()
+async def list_reviews(product_id: int, db: AsyncSession = Depends(get_db)):
+    prod_res = await db.execute(select(Product).where(Product.id == product_id))
+    product = prod_res.scalars().first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    reviews = (
-        db.query(Review)
-        .filter(Review.product_id == product_id, Review.is_approved == True)
+    query = (
+        select(Review, User.username)
+        .outerjoin(User, Review.user_id == User.id)
+        .where(Review.product_id == product_id, Review.is_approved == True)
         .order_by(Review.created_at.desc())
-        .all()
     )
+    result = await db.execute(query)
+    rows = result.all()
 
-    result = []
-    for r in reviews:
-        user = db.query(User).filter(User.id == r.user_id).first()
-        result.append(ReviewOut(
+    return [
+        ReviewOut(
             id=r.id,
             product_id=r.product_id,
             user_id=r.user_id,
-            username=user.username if user else "Unknown",
+            username=username if username else "Unknown",
             rating=r.rating,
             comment=r.comment,
             is_approved=r.is_approved,
             created_at=r.created_at,
-        ))
-    return result
+        )
+        for r, username in rows
+    ]
 
 
 @router.post(
@@ -45,22 +48,24 @@ def list_reviews(product_id: int, db: Session = Depends(get_db)):
     response_model=ReviewOut,
     status_code=status.HTTP_201_CREATED,
 )
-def create_review(
+async def create_review(
     product_id: int,
     payload: ReviewCreate,
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: AsyncSession = Depends(get_db),
 ):
-    product = db.query(Product).filter(Product.id == product_id).first()
+    prod_res = await db.execute(select(Product).where(Product.id == product_id))
+    product = prod_res.scalars().first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    existing = (
-        db.query(Review)
-        .filter(Review.product_id == product_id, Review.user_id == current_user.id)
-        .first()
+    existing_res = await db.execute(
+        select(Review).where(
+            Review.product_id == product_id,
+            Review.user_id == current_user.id,
+        )
     )
-    if existing:
+    if existing_res.scalars().first():
         raise HTTPException(status_code=409, detail="You have already reviewed this product")
 
     review = Review(
@@ -70,8 +75,8 @@ def create_review(
         comment=payload.comment,
     )
     db.add(review)
-    db.commit()
-    db.refresh(review)
+    await db.commit()
+    await db.refresh(review)
 
     return ReviewOut(
         id=review.id,

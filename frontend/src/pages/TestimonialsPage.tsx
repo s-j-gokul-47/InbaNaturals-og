@@ -15,22 +15,22 @@ export default function TestimonialsPage() {
     <div className="min-h-screen">
       {/* Page header */}
       <div className="bg-ivory-dark py-14 text-center border-b border-ivory-dark">
-        <span className="text-sage text-xs font-medium uppercase tracking-widest">Real Stories</span>
-        <h1 className="font-serif text-5xl text-charcoal mt-2 mb-3">Customer Love</h1>
+        <span className="text-sage text-xs font-medium uppercase tracking-widest">Community Feedback</span>
+        <h1 className="font-serif text-5xl text-charcoal mt-2 mb-3">Customer Experiences</h1>
         <LeafDivider />
-        <p className="text-charcoal-light mt-4 max-w-md mx-auto text-sm leading-relaxed">
-          Hear from our community of natural beauty believers. All reviews are collected from verified purchasers and community feedback.
+        <p className="text-charcoal-light mt-4 max-w-lg mx-auto text-sm leading-relaxed">
+          Real feedback from our early trial community and WhatsApp customers who have incorporated InbaNaturals botanical rituals into their daily routines.
         </p>
       </div>
 
-      {/* Overall rating banner */}
+      {/* Community rating banner */}
       <div className="bg-sage py-10">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
             <StarRating rating={5} />
-            <span className="font-serif text-4xl text-white font-bold">4.9</span>
+            <span className="font-serif text-4xl text-white font-bold">4.9 / 5</span>
           </div>
-          <p className="text-white/80 text-sm">Based on 200+ verified reviews</p>
+          <p className="text-white/90 text-sm">Feedback from our early adopters and WhatsApp community</p>
         </div>
       </div>
 
