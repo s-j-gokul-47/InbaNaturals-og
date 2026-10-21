@@ -63,17 +63,19 @@ export default function Navbar() {
 
             {/* Right-side actions */}
             <div className="flex items-center gap-2">
-              {/* WhatsApp pill — hidden on small screens */}
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="WhatsApp"
-                className="hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border border-sage text-sage hover:bg-sage hover:text-white transition-all duration-200"
-              >
-                <MessageCircle size={14} />
-                WhatsApp
-              </a>
+              {/* WhatsApp pill — only visible when logged in */}
+              {user && (
+                <a
+                  href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="WhatsApp"
+                  className="hidden sm:flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border border-sage text-sage hover:bg-sage hover:text-white transition-all duration-200"
+                >
+                  <MessageCircle size={14} />
+                  WhatsApp
+                </a>
+              )}
 
               {user ? (
                 <div className="relative">
@@ -199,18 +201,37 @@ export default function Navbar() {
               ))}
             </nav>
 
-            {/* Drawer footer with WhatsApp CTA */}
+            {/* Drawer footer */}
             <div className="px-5 py-5 border-t border-ivory-dark space-y-3">
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-sage hover:bg-sage-dark text-white rounded-2xl text-sm font-semibold transition-colors"
-              >
-                <MessageCircle size={16} />
-                Chat on WhatsApp
-              </a>
+              {user ? (
+                <a
+                  href={`https://wa.me/${WHATSAPP_NUMBER}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-center gap-2 w-full py-3 bg-sage hover:bg-sage-dark text-white rounded-2xl text-sm font-semibold transition-colors"
+                >
+                  <MessageCircle size={16} />
+                  Chat on WhatsApp
+                </a>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center w-full py-2.5 border border-sage text-sage rounded-2xl text-sm font-semibold hover:bg-sage/10 transition-colors"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-center w-full py-2.5 bg-sage text-white rounded-2xl text-sm font-semibold hover:bg-sage-dark transition-colors"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
               <p className="text-[10px] text-center text-charcoal-light">
                 © {new Date().getFullYear()} InbaNaturals · Made with 🌿
               </p>

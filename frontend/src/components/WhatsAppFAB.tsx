@@ -1,9 +1,15 @@
 import { MessageCircle } from 'lucide-react';
 import { WHATSAPP_NUMBER } from '../config';
+import { useAuth } from '../context/AuthContext';
 
 const WHATSAPP_MESSAGE = encodeURIComponent("Hi! I'd like to know more about InbaNaturals products.");
 
 export default function WhatsAppFAB() {
+  const { user } = useAuth();
+
+  // Only show the floating WhatsApp button when the user is logged in
+  if (!user) return null;
+
   return (
     <a
       href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_MESSAGE}`}
@@ -17,4 +23,3 @@ export default function WhatsAppFAB() {
     </a>
   );
 }
-
