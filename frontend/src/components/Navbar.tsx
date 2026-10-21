@@ -20,7 +20,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { cartCount } = useCart();
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
 
   return (
     <>
@@ -63,8 +63,8 @@ export default function Navbar() {
 
             {/* Right-side actions */}
             <div className="flex items-center gap-2">
-              {/* WhatsApp pill — only visible when logged in */}
-              {user && (
+              {/* WhatsApp pill — only visible when logged in AND auth check complete */}
+              {!isLoading && user && (
                 <a
                   href={`https://wa.me/${WHATSAPP_NUMBER}`}
                   target="_blank"
@@ -77,7 +77,7 @@ export default function Navbar() {
                 </a>
               )}
 
-              {user ? (
+              {!isLoading && (user ? (
                 <div className="relative">
                   <button 
                     onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -121,7 +121,7 @@ export default function Navbar() {
                     Register
                   </Link>
                 </div>
-              )}
+              ))}
 
               {/* Cart icon */}
               <Link

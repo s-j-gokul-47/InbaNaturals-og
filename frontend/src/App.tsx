@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -119,6 +119,19 @@ function PolicyPage({ title }: { title: string }) {
   );
 }
 
+function StorefrontLayout() {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      <main className="flex-1 flex flex-col">
+        <Outlet />
+      </main>
+      <Footer />
+      <WhatsAppFAB />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <HelmetProvider>
@@ -126,60 +139,58 @@ export default function App() {
         <AuthProvider>
           <CartProvider>
             <BrowserRouter>
-        <ScrollToTop />
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-1 flex flex-col">
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              <Route path="/verify-email" element={<VerifyEmailPage />} />
-              <Route path="/shop" element={<ShopPage />} />
-              <Route path="/cart" element={<CartPage />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/checkout" element={<CheckoutPage />} />
-                <Route path="/wallet" element={<WalletPage />} />
-                <Route path="/orders" element={<OrdersPage />} />
-                <Route path="/orders/:id" element={<OrderDetailPage />} />
-              </Route>
-              <Route path="/admin" element={<AdminRoute />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="orders" element={<AdminOrders />} />
-                <Route path="users" element={<AdminUsers />} />
-                <Route path="reviews" element={<AdminReviews />} />
-              </Route>
-              <Route path="/combos" element={<CombosPage />} />
-              <Route path="/faq" element={<FAQPage />} />
-              <Route path="/blog" element={<BlogListingPage />} />
-              <Route path="/blog/:id" element={<BlogPostDetailPage />} />
-              <Route path="/product/:id" element={<ProductDetailPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="/testimonials" element={<TestimonialsPage />} />
-              <Route path="/contact" element={<ContactPage />} />
-              <Route path="/shipping" element={<PolicyPage title="Shipping Policy" />} />
-              <Route path="/returns" element={<PolicyPage title="Returns Policy" />} />
-              <Route path="/privacy" element={<PolicyPage title="Privacy Policy" />} />
-              <Route path="/terms" element={<PolicyPage title="Terms of Service" />} />
-              <Route path="*" element={
-                <div className="min-h-screen flex items-center justify-center text-center px-4">
-                  <div>
-                    <p className="text-sage font-medium text-sm uppercase tracking-widest mb-2">404</p>
-                    <h1 className="font-serif text-5xl text-charcoal mb-3">Page Not Found</h1>
-                    <p className="text-charcoal-light mb-6">The page you're looking for doesn't exist.</p>
-                    <a href="/" className="bg-sage text-white px-6 py-3 rounded-2xl font-medium hover:bg-sage-dark transition-colors">
-                      Back to Home
-                    </a>
-                  </div>
-                </div>
-              } />
-            </Routes>
-          </main>
-          <Footer />
-          <WhatsAppFAB />
-        </div>
-        </BrowserRouter>
+              <ScrollToTop />
+              <Routes>
+                {/* ─── Administrative Command Shell (Isolated) ─── */}
+                <Route path="/admin" element={<AdminRoute />}>
+                  <Route index element={<AdminDashboard />} />
+                  <Route path="products" element={<AdminProducts />} />
+                  <Route path="orders" element={<AdminOrders />} />
+                  <Route path="users" element={<AdminUsers />} />
+                  <Route path="reviews" element={<AdminReviews />} />
+                </Route>
+
+                {/* ─── Consumer Storefront Shell ─── */}
+                <Route element={<StorefrontLayout />}>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/verify-email" element={<VerifyEmailPage />} />
+                  <Route path="/shop" element={<ShopPage />} />
+                  <Route path="/cart" element={<CartPage />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/checkout" element={<CheckoutPage />} />
+                    <Route path="/wallet" element={<WalletPage />} />
+                    <Route path="/orders" element={<OrdersPage />} />
+                    <Route path="/orders/:id" element={<OrderDetailPage />} />
+                  </Route>
+                  <Route path="/combos" element={<CombosPage />} />
+                  <Route path="/faq" element={<FAQPage />} />
+                  <Route path="/blog" element={<BlogListingPage />} />
+                  <Route path="/blog/:id" element={<BlogPostDetailPage />} />
+                  <Route path="/product/:id" element={<ProductDetailPage />} />
+                  <Route path="/about" element={<AboutPage />} />
+                  <Route path="/testimonials" element={<TestimonialsPage />} />
+                  <Route path="/contact" element={<ContactPage />} />
+                  <Route path="/shipping" element={<PolicyPage title="Shipping Policy" />} />
+                  <Route path="/returns" element={<PolicyPage title="Returns Policy" />} />
+                  <Route path="/privacy" element={<PolicyPage title="Privacy Policy" />} />
+                  <Route path="/terms" element={<PolicyPage title="Terms of Service" />} />
+                  <Route path="*" element={
+                    <div className="min-h-screen flex items-center justify-center text-center px-4">
+                      <div>
+                        <p className="text-sage font-medium text-sm uppercase tracking-widest mb-2">404</p>
+                        <h1 className="font-serif text-5xl text-charcoal mb-3">Page Not Found</h1>
+                        <p className="text-charcoal-light mb-6">The page you're looking for doesn't exist.</p>
+                        <a href="/" className="bg-sage text-white px-6 py-3 rounded-2xl font-medium hover:bg-sage-dark transition-colors">
+                          Back to Home
+                        </a>
+                      </div>
+                    </div>
+                  } />
+                </Route>
+              </Routes>
+            </BrowserRouter>
           </CartProvider>
         </AuthProvider>
       </ToastProvider>

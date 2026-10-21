@@ -57,70 +57,84 @@ export default function HomePage() {
       {/* ─── HERO ─── */}
       <section
         id="hero"
-        className="relative min-h-[90vh] flex items-center overflow-hidden"
-        style={{ background: 'linear-gradient(135deg, #EEF4EC 0%, #FAF6EE 50%, #F5EDE0 100%)' }}
+        className="relative min-h-[85vh] flex items-center overflow-hidden bg-[#FBF8F2] border-b border-[#E8E0D2]/60"
       >
-        {/* Decorative blobs */}
-        <div className="absolute top-0 right-0 w-96 h-96 rounded-full opacity-20 -translate-y-1/2 translate-x-1/3" style={{ background: '#7A9471' }} />
-        <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full opacity-10 translate-y-1/2 -translate-x-1/3" style={{ background: '#C97C5D' }} />
+        {/* Subtle Warm Botanical Atmosphere */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(107,136,99,0.12),transparent_70%)] pointer-events-none" />
 
-        {/* Botanical SVG accent top-left */}
-        <svg className="absolute top-8 left-8 opacity-10" width="120" height="120" viewBox="0 0 120 120" fill="none" aria-hidden="true">
-          <circle cx="60" cy="60" r="50" stroke="#7A9471" strokeWidth="1" strokeDasharray="4 6"/>
-          <path d="M60 20 C40 30, 20 50, 30 80 C40 100, 80 100, 90 80 C100 50, 80 30, 60 20Z" stroke="#7A9471" strokeWidth="1.5" fill="none"/>
-          <line x1="60" y1="20" x2="60" y2="100" stroke="#7A9471" strokeWidth="1" strokeDasharray="3 5"/>
-        </svg>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center py-20">
-          {/* Text */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center py-16 md:py-24 relative z-10">
+          {/* Text & Brand Narrative */}
           <div className="text-center lg:text-left">
-            <span className="inline-flex items-center gap-2 text-sage text-sm font-medium uppercase tracking-widest mb-4">
-              <Leaf size={14} /> Pure. Natural. Botanical.
-            </span>
-            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-charcoal leading-tight mb-6">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#6B8863]/10 border border-[#6B8863]/25 text-[#4B6844] text-xs font-semibold uppercase tracking-widest mb-6">
+              <Leaf size={14} className="text-[#6B8863]" /> Pure · Artisanal · Botanical
+            </div>
+
+            <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl text-[#25221F] leading-[1.08] tracking-tight mb-6">
               Glow from the{' '}
-              <span className="italic text-sage">inside</span>{' '}
+              <span className="italic font-normal text-[#6B8863]">inside</span>{' '}
               out.
             </h1>
-            <p className="text-charcoal-light text-lg leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
-              Discover our handcrafted botanical beauty rituals — made with the purest ingredients from nature, for skin and hair that truly thrives.
+
+            <p className="text-[#59534C] text-lg leading-relaxed mb-8 max-w-lg mx-auto lg:mx-0">
+              Handcrafted botanical beauty rituals formulated with cold-pressed oils, wild-harvested herbs, and pure plant actives for skin and hair that thrive.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
               <Link
                 to="/shop"
-                className="inline-flex items-center justify-center gap-2 bg-sage hover:bg-sage-dark text-white font-medium px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 text-base"
+                className="inline-flex items-center justify-center gap-2 bg-[#6B8863] hover:bg-[#4B6844] text-white font-medium px-8 py-3.5 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 text-base font-sans"
               >
-                Shop Now <ArrowRight size={18} />
+                Shop Collection <ArrowRight size={18} />
               </Link>
               <Link
                 to="/about"
-                className="inline-flex items-center justify-center gap-2 border-2 border-sage text-sage hover:bg-sage hover:text-white font-medium px-8 py-4 rounded-2xl transition-all duration-300 text-base"
+                className="inline-flex items-center justify-center gap-2 border border-[#6B8863] text-[#4B6844] hover:bg-[#6B8863] hover:text-white font-medium px-8 py-3.5 rounded-xl transition-all duration-200 text-base font-sans"
               >
-                Our Story
+                Our Botanical Story
               </Link>
+            </div>
+
+            {/* Trust Certification Pillars */}
+            <div className="pt-6 border-t border-[#E8E0D2] grid grid-cols-3 gap-3 text-left">
+              <div>
+                <p className="font-serif text-lg font-bold text-[#25221F]">100%</p>
+                <p className="text-xs text-[#59534C]">Plant-Derived Actives</p>
+              </div>
+              <div className="border-l border-[#E8E0D2] pl-3">
+                <p className="font-serif text-lg font-bold text-[#25221F]">0%</p>
+                <p className="text-xs text-[#59534C]">Parabens & Sulfates</p>
+              </div>
+              <div className="border-l border-[#E8E0D2] pl-3">
+                <p className="font-serif text-lg font-bold text-[#25221F]">Small-Batch</p>
+                <p className="text-xs text-[#59534C]">Handcrafted in India</p>
+              </div>
             </div>
           </div>
 
-          {/* Hero image placeholder */}
+          {/* Hero Imagery */}
           <div className="relative flex justify-center lg:justify-end">
-            <div className="relative">
-              {/* Main placeholder */}
-              <div className="w-80 h-80 md:w-96 md:h-96 rounded-[3rem] shadow-2xl overflow-hidden border-4 border-white/60">
+            <div className="relative max-w-md w-full">
+              {/* Product Frame */}
+              <div className="aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border border-white/80 bg-white">
                 <img
                   src={faceSerumImg}
-                  alt="InbaNaturals hero product"
+                  alt="InbaNaturals Botanical Formulations"
                   className="w-full h-full object-cover"
                 />
               </div>
-              {/* Floating badge */}
-              <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl shadow-xl px-5 py-3 border border-ivory-dark">
-                <p className="text-xs text-charcoal-light font-medium">⭐ Rated</p>
-                <p className="font-serif text-charcoal font-bold text-lg">4.9/5</p>
-                <p className="text-xs text-sage">by 200+ customers</p>
+
+              {/* Verified Rating Pill */}
+              <div className="absolute -bottom-5 -left-4 sm:left-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-xl px-5 py-3 border border-[#E8E0D2]">
+                <div className="flex items-center gap-1.5 text-amber-500 mb-0.5">
+                  <StarRating rating={5} />
+                </div>
+                <p className="font-serif text-[#25221F] font-bold text-base leading-tight">4.9 / 5 Rating</p>
+                <p className="text-[11px] text-[#59534C]">Verified Customer Reviews</p>
               </div>
-              {/* Floating ingredient tag */}
-              <div className="absolute -top-4 -right-4 bg-terracotta text-white text-sm font-medium px-4 py-2 rounded-2xl shadow-lg">
-                🌿 100% Natural
+
+              {/* Formulation Tag */}
+              <div className="absolute -top-3 -right-3 bg-[#BA6446] text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-lg">
+                🌿 Fresh Extraction Batch
               </div>
             </div>
           </div>

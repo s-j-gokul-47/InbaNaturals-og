@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:frontend": "cd frontend && npm run dev",
+    "dev": "npm --prefix frontend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "cd backend && python -m uvicorn app.main:app --reload",
     "test:backend": "cd backend && python -m pytest",
-    "build": "tsc -b && vite build",
+    "build": "npm --prefix frontend run build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "npm --prefix frontend run preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.112.2",
