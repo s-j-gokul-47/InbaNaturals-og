@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   isLoading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<User>;
   register: (data: { username: string; email: string; password: string; full_name?: string }) => Promise<void>;
   logout: () => void;
   loginAsGuest: () => void;
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     fetchUser();
   }, [token]);
 
-  const login = async (username: string, password: string) => {
+  const login = async (username: string, password: string): Promise<User> => {
     const res = await api.post('/auth/login', { username, password });
     
     const { access_token } = res.data;
@@ -50,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       headers: { Authorization: `Bearer ${access_token}` }
     });
     setUser(meRes.data);
+    return meRes.data;
   };
 
   const register = async (data: { username: string; email: string; password: string; full_name?: string }) => {

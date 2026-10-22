@@ -24,9 +24,13 @@ export default function LoginPage() {
     setLoading(true);
     
     try {
-      await login(username, password);
+      const loggedUser = await login(username, password);
       showToast('Successfully logged in!', 'success');
-      navigate(from, { replace: true });
+      if (loggedUser.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err: any) {
       let errorMsg = 'Invalid credentials or unverified email.';
       if (!err.response) {
